@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:weightSum="3"
+    android:layout_height="match_parent" android:orientation="horizontal">
+
+    <ImageView
+        android:layout_width="0dp" android:src="@drawable/img_item" android:layout_gravity="center"
+        android:layout_height="wrap_content" android:id="@+id/img_article_item" android:layout_weight=".5" />
+
+    <LinearLayout
+        android:layout_marginLeft="5dp" android:layout_weight="2"
+        android:layout_width="0dp" android:layout_gravity="center"
+        android:layout_height="wrap_content" android:orientation="vertical">
+
+
+        <TextView
+            android:layout_width="match_parent" android:textSize="18dp" android:textStyle="bold" android:text="dfhdhfjkdfd"
+            android:layout_height="wrap_content" android:maxLines="2" android:ems="3" android:ellipsize="end" android:id="@+id/txt_title" />
+
+
+        <TextView
+            android:layout_width="match_parent" android:textSize="16dp"  android:text="dfhdhfjkdfd"
+            android:layout_height="wrap_content" android:maxLines="2" android:ems="3" android:ellipsize="end" android:id="@+id/txt_sub_title" />
+
+        <TextView
+            android:layout_gravity="right"
+            android:drawableLeft="@drawable/calendar" android:gravity="center|left"
+            android:layout_width="wrap_content" android:textSize="14dp" android:text="dfhdhfjkdfd"
+            android:layout_height="wrap_content" android:id="@+id/txt_date" />
+
+    </LinearLayout>
+
+    <ImageView
+        android:layout_width="0dp" android:layout_weight=".5" android:src="@drawable/right_arrow" android:layout_gravity="center"
+        android:layout_height="wrap_content" android:id="@+id/img_right_arrow" />
+
+</LinearLayout>
