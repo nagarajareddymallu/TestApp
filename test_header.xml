@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical" tools:ignore="all">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:layout_gravity="center"
+        android:layout_margin="5dp"
+        android:gravity="center|left" >
+
+        <ImageView
+            android:id="@+id/img_left_menu"
+            android:layout_width="30dp"
+            android:layout_height="60dp"
+            android:src="@drawable/menu" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginLeft="5dp"
+            android:layout_weight="1"
+            android:orientation="vertical" android:gravity="center">
+
+            <TextView
+                android:id="@+id/txt_title_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="Articles Data" android:visibility="gone"
+                android:textColor="@color/black"
+                android:textSize="20dp" />
+
+            <EditText
+                android:id="@+id/edt_search"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="15dp"
+                android:drawableLeft="@android:drawable/ic_menu_search"
+                android:textColor="@android:color/darker_gray"
+                android:hint="Search Item .."
+                android:maxWidth="50dp"
+                android:textSize="18dp"
+                android:singleLine="true" />
+
+        </LinearLayout>
+
+        <ImageView
+            android:id="@+id/img_right_menu"
+            android:layout_width="30dp"
+            android:layout_height="50dp"
+            android:src="@drawable/dots"/>
+    </LinearLayout>
+
+</LinearLayout>
