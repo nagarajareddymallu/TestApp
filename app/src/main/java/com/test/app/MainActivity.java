@@ -6,11 +6,15 @@ import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.test.app.adapter.ArticleListItemAdapter;
@@ -34,6 +38,11 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     private ImageView img_right_menu;
     private ListView lst_articles;
 
+    private ArticleListItemAdapter articleListItemAdapter;
+
+    private EditText edt_search;
+    private TextView txt_title_name;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -48,9 +57,29 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
             Toast.makeText(this, "Need internet connection!", Toast.LENGTH_LONG).show();
         }
 
+        edt_search.addTextChangedListener(new TextWatcher() {
+
+            public void afterTextChanged(Editable s) {
+            }
+
+            public void beforeTextChanged(CharSequence s, int start,
+                                          int count, int after) {
+            }
+
+            public void onTextChanged(CharSequence s, int start,
+                                      int before, int count) {
+                if (articleListItemAdapter != null)
+                    articleListItemAdapter.getFilter().filter(s.toString());
+            }
+        });
+
     }
 
     public void initializeViews() {
+        edt_search = (EditText) findViewById(R.id.edt_search);
+        txt_title_name = (TextView) findViewById(R.id.txt_title_name);
+        edt_search.setVisibility(View.VISIBLE);
+        txt_title_name.setVisibility(View.GONE);
         lst_articles = (ListView) findViewById(R.id.lst_articles);
         img_left_menu = (ImageView) findViewById(R.id.img_left_menu);
         img_right_menu = (ImageView) findViewById(R.id.img_right_menu);
@@ -120,7 +149,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
             Log.d("onNext", "" + s);
             try {
                 List<ArticleData> list_data = Utils.getResponseData(s.toString());
-                ArticleListItemAdapter articleListItemAdapter = new ArticleListItemAdapter(MainActivity.this,list_data);
+                articleListItemAdapter = new ArticleListItemAdapter(MainActivity.this,list_data);
                 lst_articles.setAdapter(articleListItemAdapter);
             } catch (Exception ex) {
                 ex.printStackTrace();
