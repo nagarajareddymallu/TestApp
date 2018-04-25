@@ -1,6 +1,5 @@
 package com.test.app;
 
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
@@ -19,26 +18,23 @@ import android.widget.Toast;
 
 import com.test.app.adapter.ArticleListItemAdapter;
 import com.test.app.constant.CommonConstants;
+import com.test.app.controller.TestController;
 import com.test.app.data.ArticleData;
+import com.test.app.listeners.WebserviceResponse;
 import com.test.app.util.Utils;
 
 import java.util.List;
 
-import rx.Observable;
-import rx.Observer;
-import rx.Subscriber;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
+public class MainActivity extends BaseActivity implements View.OnClickListener, WebserviceResponse {
 
-public class MainActivity extends BaseActivity implements View.OnClickListener {
 
-    private ProgressDialog barProgressDialog;
+    private TestController testController;
 
     private ImageView img_left_menu;
     private ImageView img_right_menu;
     private ListView lst_articles;
 
-    private ArticleListItemAdapter articleListItemAdapter;
+    public ArticleListItemAdapter articleListItemAdapter;
 
     private EditText edt_search;
     private TextView txt_title_name;
@@ -47,12 +43,13 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        //Get Global Controller Class object (see application tag in AndroidManifest.xml)
+        testController = (TestController) getApplicationContext();
         initializeViews();
+
         if (isOnline()) {
-            launchBarDialog(MainActivity.this);
-            getObservable().subscribeOn(Schedulers.newThread())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(observer);
+            testController.launchBarDialog(MainActivity.this,"Articles Request ","Articles request in progress...");
+            testController.webserviceCall(CommonConstants.ARTICAL_URL,this);
         } else {
             Toast.makeText(this, "Need internet connection!", Toast.LENGTH_LONG).show();
         }
@@ -89,8 +86,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
                 ArticleData articleData = (ArticleData) lst_articles.getItemAtPosition(position);
-                Intent intent = new Intent(MainActivity.this,ArticleDetailsActivity.class);
-                intent.putExtra("selectedArticle",articleData);
+                Intent intent = new Intent(MainActivity.this, ArticleDetailsActivity.class);
+                intent.putExtra("selectedArticle", articleData);
                 startActivity(intent);
             }
         });
@@ -120,62 +117,32 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         return netInfo != null && netInfo.isConnectedOrConnecting();
     }
 
-    public void launchBarDialog(Context context) {
-        barProgressDialog = new ProgressDialog(context);
-        barProgressDialog.setTitle("Articles Request ");
-        barProgressDialog.setMessage("Articles request in progress..");
-        barProgressDialog.setCancelable(false);
-        barProgressDialog.setCanceledOnTouchOutside(false);
-        barProgressDialog.show();
+    @Override
+    public void onCompleted() {
+        if (testController.barProgressDialog != null && testController.barProgressDialog.isShowing())
+            testController.barProgressDialog.dismiss();
+        Log.d("onCompleted", "Completed");
     }
 
-    Observer observer = new Observer() {
-        @Override
-        public void onCompleted() {
-            if (barProgressDialog != null && barProgressDialog.isShowing())
-                barProgressDialog.dismiss();
-            Log.d("onCompleted", "Completed");
-        }
-
-        @Override
-        public void onError(Throwable e) {
-            if (barProgressDialog != null && barProgressDialog.isShowing())
-                barProgressDialog.dismiss();
-            Log.d("onError", "onError");
-        }
-
-        @Override
-        public void onNext(Object s) {
-            Log.d("onNext", "" + s);
-            try {
-                List<ArticleData> list_data = Utils.getResponseData(s.toString());
-                articleListItemAdapter = new ArticleListItemAdapter(MainActivity.this,list_data);
-                lst_articles.setAdapter(articleListItemAdapter);
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
-            if (barProgressDialog != null && barProgressDialog.isShowing())
-                barProgressDialog.dismiss();
-
-        }
-    };
-
-    public Observable<String> getObservable() {
-        return Observable.create(new Observable.OnSubscribe<String>() {
-            @Override
-            public void call(Subscriber<? super String> subscriber) {
-
-                //launchBarDialog(MainActivity.this);
-                try {
-                    String response = Utils.getJsonFromUrl(CommonConstants.ARTICAL_URL);
-                    subscriber.onNext(response);
-                    subscriber.onCompleted();
-                } catch (Exception ex) {
-                    subscriber.onError(ex);
-                }
-
-            }
-        });
+    @Override
+    public void onError(Throwable e) {
+        if (testController.barProgressDialog != null && testController.barProgressDialog.isShowing())
+            testController.barProgressDialog.dismiss();
+        Log.d("onError", "onError");
     }
 
+    @Override
+    public void onNext(Object s) {
+        Log.d("onNext", "" + s);
+        try {
+            List<ArticleData> list_data = Utils.getResponseData(s.toString());
+            articleListItemAdapter = new ArticleListItemAdapter(MainActivity.this, list_data);
+            lst_articles.setAdapter(articleListItemAdapter);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        if (testController.barProgressDialog != null && testController.barProgressDialog.isShowing())
+            testController.barProgressDialog.dismiss();
+
+    }
 }
